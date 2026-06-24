@@ -28,7 +28,8 @@ spec:
           processors:
             batch: {}
           exporters:
-            debug: {}
+            debug:
+              verbosity: detailed
           service:
             pipelines:
               traces:

@@ -33,7 +33,11 @@ By the end of this lesson, readers should understand:
 - how metrics and traces are wired through both application code and Kubernetes manifests
 - what to verify in a live cluster once the workload is healthy
 
-One small first-sync wrinkle is worth calling out early. The `kube-prometheus-stack` application creates Prometheus Operator CRDs and then immediately creates resources such as `PrometheusRule` and `ServiceMonitor` that depend on those CRDs. During that first reconciliation, Argo CD can briefly show `Missing`, `OutOfSync`, or `Syncing` states while the Kubernetes API registers those custom resource types. That short-lived noise is normal. In this repo, we explicitly enable the chart CRDs, turn on the chart's CRD upgrade job, set `SkipDryRunOnMissingResource=true` so Argo CD keeps moving instead of failing the sync on CRD timing, and use `ServerSideApply=true` because the Prometheus Operator CRDs are large enough that client-side apply can become fragile.
+One small first-sync wrinkle is worth calling out early. The `kube-prometheus-stack` application creates Prometheus Operator CRDs and then immediately creates resources such as `PrometheusRule` and `ServiceMonitor` that depend on those CRDs. During that first reconciliation, Argo CD can briefly show `Missing`, `OutOfSync`, or `Syncing` states while the Kubernetes API registers those custom resource types. That short-lived noise is normal. In this repo, we explicitly enable the chart CRDs, turn on the chart's CRD upgrade job, set `SkipDryRunOnMissingResource=true` so Argo CD keeps moving instead of failing the sync on CRD timing, and use `ServerSideApply=true` because the Prometheus Operator CRDs are large enough that client-side apply can become fragile. The application also uses `ignoreDifferences` with `jqPathExpressions` for webhook `caBundle`/`failurePolicy` fields and CRD `openAPIV3Schema` fields that the API server mutates, paired with `RespectIgnoreDifferences=true` to prevent perpetual OutOfSync states.
+
+Because EKS manages control plane components and does not expose their metrics endpoints, the helm values disable `kubeEtcd`, `kubeControllerManager`, `kubeScheduler`, `kubeProxy`, and `coreDns`. This avoids creating Services in `kube-system` that would be rejected by the `platform` AppProject's namespace restrictions.
+
+For `otel-collector`, the chart requires explicit `image.repository: otel/opentelemetry-collector-contrib` and explicit endpoint bindings (`grpc.endpoint: 0.0.0.0:4317`, `http.endpoint: 0.0.0.0:4318`) for the OTLP receiver protocols.
 
 If a live cluster still shows no `monitoring.coreos.com` CRDs after the first sync attempt, the repo includes `scripts/install-kube-prometheus-crds.sh` as a one-time bootstrap helper. That script pulls the CRDs from the same `kube-prometheus-stack` chart version used by the lesson and applies them before Argo CD retries the rest of the platform resources.
 
@@ -548,6 +552,8 @@ Capture recommendation: Capture the Prometheus Targets page or a Prometheus quer
 Because this repo does not install a full tracing UI, the simplest proof for traces is the collector's debug output.
 
 That is still a valid teaching surface. It proves the application is exporting spans and the collector is receiving them.
+
+The collector in this repo is intentionally configured with the debug exporter in detailed mode. That gives the lesson a much better verification surface than a generic "collector is running" screenshot because readers can see actual trace data arriving.
 
 The nicest way to demonstrate it is:
 
