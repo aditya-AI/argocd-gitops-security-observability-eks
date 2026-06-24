@@ -83,6 +83,7 @@ Supporting examples for the security and observability lesson live here:
 
 - `scripts/verify-argocd-apps.sh`
 - `scripts/verify-security-observability.sh`
+- `scripts/install-kube-prometheus-crds.sh`
 
 ## Common workflow
 
@@ -130,7 +131,17 @@ export GITOPS_REVISION=main
 ./scripts/bootstrap-root-app.sh
 ```
 
+Make sure the repository at `GITOPS_REPO_URL` is reachable by Argo CD. The quickest lesson path is a public GitHub repo, but a private repo works too if you add repository credentials to Argo CD first. Otherwise the `platform-root` application will stay in an `Unknown` sync state with a repository authentication error.
+
 The install script uses server-side apply on the upstream Argo CD manifest so large CRDs such as `applicationsets.argoproj.io` do not fail with Kubernetes annotation-size limits.
+
+If `kube-prometheus-stack` stays stuck in `Missing` or `OutOfSync` and `kubectl get crds | grep monitoring.coreos.com` returns nothing, bootstrap the Prometheus Operator CRDs once with:
+
+```bash
+./scripts/install-kube-prometheus-crds.sh
+```
+
+Then refresh the `kube-prometheus-stack` application in Argo CD and let the platform sync continue.
 
 ## What this repo is designed to teach
 
