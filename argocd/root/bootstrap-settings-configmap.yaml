@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-bootstrap-settings
+  namespace: argocd
+data:
+  gitopsRepoUrl: "https://github.com/your-org/argocd-gitops-security-observability-eks.git"
+  gitopsRevision: "main"
+  kubePrometheusChartVersion: "69.8.2"
+  otelCollectorChartVersion: "0.111.1"

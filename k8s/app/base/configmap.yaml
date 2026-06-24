@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: gitops-demo
+data:
+  DB_HOST: "postgres"
+  DB_PORT: "5432"
+  DB_NAME: "app"
+  STARTUP_DELAY_SECONDS: "0"
+  DRAIN_SLEEP_SECONDS: "12"
+  POLL_SECONDS: "2"
+  WORK_SECONDS: "1"

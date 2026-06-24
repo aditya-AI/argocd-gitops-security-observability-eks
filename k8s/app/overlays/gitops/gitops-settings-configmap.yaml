@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gitops-settings
+  namespace: gitops-demo
+data:
+  apiImage: "123456789012.dkr.ecr.us-east-1.amazonaws.com/gitops-demo-api:latest"
+  workerImage: "123456789012.dkr.ecr.us-east-1.amazonaws.com/gitops-demo-worker:latest"
+  migratorImage: "123456789012.dkr.ecr.us-east-1.amazonaws.com/gitops-demo-migrator:latest"
+  apiRoleArn: "arn:aws:iam::123456789012:role/gitops-demo-api-irsa"
+  workerRoleArn: "arn:aws:iam::123456789012:role/gitops-demo-worker-irsa"
+  apiHost: "api.example.com"

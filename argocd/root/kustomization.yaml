@@ -1,0 +1,62 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - bootstrap-settings-configmap.yaml
+  - platform-project.yaml
+  - workloads-project.yaml
+  - kube-prometheus-stack-app.yaml
+  - opentelemetry-collector-app.yaml
+  - workload-app.yaml
+
+replacements:
+  - source:
+      kind: ConfigMap
+      name: argocd-bootstrap-settings
+      fieldPath: data.gitopsRepoUrl
+    targets:
+      - select:
+          kind: AppProject
+          name: platform
+        fieldPaths:
+          - spec.sourceRepos.0
+      - select:
+          kind: AppProject
+          name: workloads
+        fieldPaths:
+          - spec.sourceRepos.0
+      - select:
+          kind: Application
+          name: workload
+        fieldPaths:
+          - spec.source.repoURL
+  - source:
+      kind: ConfigMap
+      name: argocd-bootstrap-settings
+      fieldPath: data.gitopsRevision
+    targets:
+      - select:
+          kind: Application
+          name: workload
+        fieldPaths:
+          - spec.source.targetRevision
+  - source:
+      kind: ConfigMap
+      name: argocd-bootstrap-settings
+      fieldPath: data.kubePrometheusChartVersion
+    targets:
+      - select:
+          kind: Application
+          name: kube-prometheus-stack
+        fieldPaths:
+          - spec.source.targetRevision
+  - source:
+      kind: ConfigMap
+      name: argocd-bootstrap-settings
+      fieldPath: data.otelCollectorChartVersion
+    targets:
+      - select:
+          kind: Application
+          name: otel-collector
+        fieldPaths:
+          - spec.source.targetRevision

@@ -1,0 +1,82 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base
+  - gitops-settings-configmap.yaml
+  - serviceaccounts.yaml
+  - storageclass-gp3.yaml
+  - rbac.yaml
+  - networkpolicies.yaml
+  - service-monitor.yaml
+
+patches:
+  - path: patch-api-serviceaccount.yaml
+  - path: patch-worker-serviceaccount.yaml
+  - path: patch-postgres-storage.yaml
+  - path: patch-ingress-alb.yaml
+  - path: patch-api-observability.yaml
+  - path: patch-worker-observability.yaml
+  - path: patch-sync-waves.yaml
+
+replacements:
+  - source:
+      kind: ConfigMap
+      name: gitops-settings
+      fieldPath: data.apiImage
+    targets:
+      - select:
+          kind: Deployment
+          name: api
+        fieldPaths:
+          - spec.template.spec.containers.0.image
+  - source:
+      kind: ConfigMap
+      name: gitops-settings
+      fieldPath: data.workerImage
+    targets:
+      - select:
+          kind: Deployment
+          name: worker
+        fieldPaths:
+          - spec.template.spec.containers.0.image
+  - source:
+      kind: ConfigMap
+      name: gitops-settings
+      fieldPath: data.migratorImage
+    targets:
+      - select:
+          kind: Job
+          name: migrate
+        fieldPaths:
+          - spec.template.spec.containers.0.image
+  - source:
+      kind: ConfigMap
+      name: gitops-settings
+      fieldPath: data.apiRoleArn
+    targets:
+      - select:
+          kind: ServiceAccount
+          name: api-sa
+        fieldPaths:
+          - metadata.annotations.[eks.amazonaws.com/role-arn]
+  - source:
+      kind: ConfigMap
+      name: gitops-settings
+      fieldPath: data.workerRoleArn
+    targets:
+      - select:
+          kind: ServiceAccount
+          name: worker-sa
+        fieldPaths:
+          - metadata.annotations.[eks.amazonaws.com/role-arn]
+  - source:
+      kind: ConfigMap
+      name: gitops-settings
+      fieldPath: data.apiHost
+    targets:
+      - select:
+          kind: Ingress
+          name: api
+        fieldPaths:
+          - spec.rules.0.host

@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+  namespace: gitops-demo
+spec:
+  template:
+    metadata:
+      labels:
+        observability: enabled
+    spec:
+      containers:
+        - name: worker
+          env:
+            - name: DEPLOY_ENV
+              value: "eks"
+            - name: OTEL_SERVICE_NAME
+              value: "gitops-demo-worker"
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://otel-collector.observability.svc.cluster.local:4318"
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "service.namespace=gitops-demo,deployment.environment=eks"
