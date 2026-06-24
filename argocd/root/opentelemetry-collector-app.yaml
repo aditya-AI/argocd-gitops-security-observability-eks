@@ -14,13 +14,17 @@ spec:
     helm:
       releaseName: otel-collector
       values: |
+        image:
+          repository: otel/opentelemetry-collector-contrib
         mode: deployment
         config:
           receivers:
             otlp:
               protocols:
                 grpc:
+                  endpoint: 0.0.0.0:4317
                 http:
+                  endpoint: 0.0.0.0:4318
           processors:
             batch: {}
           exporters:
@@ -57,3 +61,4 @@ spec:
         maxDuration: 2m
     syncOptions:
       - CreateNamespace=true
+      - ServerSideApply=true
