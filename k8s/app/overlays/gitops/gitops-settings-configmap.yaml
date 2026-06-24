@@ -10,3 +10,5 @@ data:
   apiRoleArn: "arn:aws:iam::863518411441:role/gitops-demo-api-irsa"
   workerRoleArn: "arn:aws:iam::863518411441:role/gitops-demo-worker-irsa"
   apiHost: "api.example.com"
+
+  
