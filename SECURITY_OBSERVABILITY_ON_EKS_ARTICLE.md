@@ -415,15 +415,15 @@ Application code is only half of the observability story. The cluster still need
 The file `k8s/app/overlays/gitops/patch-api-observability.yaml` adds environment variables to the API Deployment:
 
 ```yaml
-env:
-  - name: DEPLOY_ENV
-    value: "eks"
-  - name: OTEL_SERVICE_NAME
-    value: "gitops-demo-api"
-  - name: OTEL_EXPORTER_OTLP_ENDPOINT
-    value: "http://otel-collector.observability.svc.cluster.local:4318"
-  - name: OTEL_RESOURCE_ATTRIBUTES
-    value: "service.namespace=gitops-demo,deployment.environment=eks"
+  env:
+    - name: DEPLOY_ENV
+      value: "eks"
+    - name: OTEL_SERVICE_NAME
+      value: "gitops-demo-api"
+    - name: OTEL_EXPORTER_OTLP_ENDPOINT
+      value: "http://otel-collector-opentelemetry-collector.observability.svc.cluster.local:4318"
+    - name: OTEL_RESOURCE_ATTRIBUTES
+      value: "service.namespace=gitops-demo,deployment.environment=eks"
 ```
 
 The worker patch mirrors the same pattern in `patch-worker-observability.yaml`.

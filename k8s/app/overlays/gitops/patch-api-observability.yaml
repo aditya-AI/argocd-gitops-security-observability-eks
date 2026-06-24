@@ -19,6 +19,6 @@ spec:
             - name: OTEL_SERVICE_NAME
               value: "gitops-demo-api"
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
-              value: "http://otel-collector.observability.svc.cluster.local:4318"
+              value: "http://otel-collector-opentelemetry-collector.observability.svc.cluster.local:4318"
             - name: OTEL_RESOURCE_ATTRIBUTES
               value: "service.namespace=gitops-demo,deployment.environment=eks"
