@@ -33,6 +33,8 @@ By the end of this lesson, readers should understand:
 - how metrics and traces are wired through both application code and Kubernetes manifests
 - what to verify in a live cluster once the workload is healthy
 
+One small first-sync wrinkle is worth calling out early. The `kube-prometheus-stack` application creates Prometheus Operator CRDs and then immediately creates resources such as `PrometheusRule` and `ServiceMonitor` that depend on those CRDs. During that first reconciliation, Argo CD can briefly show `Missing`, `OutOfSync`, or `Syncing` states while the Kubernetes API registers those custom resource types. That short-lived noise is normal. In this repo, we explicitly set `SkipDryRunOnMissingResource=true` on the Prometheus stack app so Argo CD keeps moving instead of failing the sync on CRD timing.
+
 **Figure 1. Security and observability architecture for the workload on Amazon EKS.**
 
 Nano Banana prompt: Create a polished engineering-blog architecture diagram on a white background. Show the `gitops-demo` namespace containing `api`, `worker`, `migrator`, and `postgres`. Surround the namespace with a subtle `default deny` security boundary. Show `api-sa` and `worker-sa` using IRSA. Show Prometheus scraping `/metrics` from the API. Show both `api` and `worker` sending OTLP traces to an OpenTelemetry Collector in the `observability` namespace. Use clean blue-gray cloud colors, crisp labels, and a modern lesson-ready visual style.

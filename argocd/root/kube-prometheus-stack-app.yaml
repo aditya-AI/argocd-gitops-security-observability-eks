@@ -36,3 +36,4 @@ spec:
         maxDuration: 2m
     syncOptions:
       - CreateNamespace=true
+      - SkipDryRunOnMissingResource=true

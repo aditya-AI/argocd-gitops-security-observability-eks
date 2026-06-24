@@ -316,6 +316,10 @@ This is a very teachable pattern:
 - inject the live repo URL and branch at bootstrap time
 - avoid hardcoding one specific fork or branch into the shared lesson repo
 
+Before readers run this step on a live cluster, one practical detail matters:
+
+Argo CD must be able to read the Git repository you point it at. For the smoothest lesson flow, make your GitHub fork public before bootstrapping the root application. If you keep the repo private, you must register repository credentials in Argo CD first. Otherwise the root app will stay in an `Unknown` sync state with an error such as `authentication required: Repository not found.`
+
 After this step, Argo CD starts reading the rest of the desired state from Git instead of waiting for more shell commands.
 
 ## Inside `argocd/root`: This Is the GitOps Control Plane
@@ -522,6 +526,8 @@ Nano Banana prompt: Create a clean app-of-apps architecture diagram for an Argo 
 Capture recommendation: Prefer the Argo CD UI application list after the root app has reconciled. Make sure the screenshot shows `platform-root`, `kube-prometheus-stack`, `otel-collector`, and `workload` together with their sync and health states.
 
 This is the moment when the app-of-apps idea stops being abstract. In the UI, readers should be able to see one parent application and its child applications all converging on the desired state from Git.
+
+On a fresh cluster, `kube-prometheus-stack` may briefly show `Missing`, `OutOfSync`, or `Syncing` during its first reconciliation. That application installs Prometheus Operator CRDs and then creates resources that depend on them. This repo uses `SkipDryRunOnMissingResource=true` where needed so Argo CD can move through that short CRD registration window instead of treating it as a hard failure.
 
 The helper script `scripts/verify-argocd-apps.sh` gives the lesson a nice terminal companion to the UI by collecting:
 
