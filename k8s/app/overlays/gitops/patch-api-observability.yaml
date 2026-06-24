@@ -7,7 +7,7 @@ spec:
   template:
     metadata:
       annotations:
-        lesson.gitops/demo-ts: "2026-06-25-0438"
+        lesson.gitops/demo-ts: "2026-06-25-0500"
       labels:
         observability: enabled
     spec:
